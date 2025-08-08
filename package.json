@@ -1,0 +1,16 @@
+{
+  "name": "agrokart",
+  "version": "1.0.0",
+  "description": "AgroKart is a revolutionary dual-mode e-commerce platform designed to bridge the gap between farmers, middlemen, and consumers by eliminating inefficiencies in the agricultural supply chain. The platform promotes transparency, fair pricing, and direct access to farm-fresh produce.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
