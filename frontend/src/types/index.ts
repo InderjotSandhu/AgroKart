@@ -327,27 +327,25 @@ export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
 // Export all types as a namespace as well
 export namespace AgroKart {
-  export type {
-    User,
-    AuthUser,
-    UserRole,
-    FarmerProfile,
-    MiddlemanProfile,
-    Product,
-    Category,
-    Order,
-    OrderItem,
-    OrderStatus,
-    PaymentStatus,
-    Review,
-    CartItem,
-    Cart,
-    ApiResponse,
-    PaginatedResponse,
-    ProductFilters,
-    SearchParams,
-    LoadingState,
-    NotificationState,
-    SalesAnalytics
-  };
+  export type TUser = User;
+  export type TAuthUser = AuthUser;
+  export type TUserRole = UserRole;
+  export type TFarmerProfile = FarmerProfile;
+  export type TMiddlemanProfile = MiddlemanProfile;
+  export type TProduct = Product;
+  export type TCategory = Category;
+  export type TOrder = Order;
+  export type TOrderItem = OrderItem;
+  export type TOrderStatus = OrderStatus;
+  export type TPaymentStatus = PaymentStatus;
+  export type TReview = Review;
+  export type TCartItem = CartItem;
+  export type TCart = Cart;
+  export type TApiResponse<T = any> = ApiResponse<T>;
+  export type TPaginatedResponse<T = any> = PaginatedResponse<T>;
+  export type TProductFilters = ProductFilters;
+  export type TSearchParams = SearchParams;
+  export type TLoadingState = LoadingState;
+  export type TNotificationState = NotificationState;
+  export type TSalesAnalytics = SalesAnalytics;
 }

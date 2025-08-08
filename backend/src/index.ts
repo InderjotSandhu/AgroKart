@@ -68,4 +68,135 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(compression());
 
 // Logging middleware
-if (NODE_ENV === 'development') {\n  app.use(morgan('dev'));\n} else {\n  app.use(morgan('combined'));\n}\napp.use(requestLogger);\n\n// Rate limiting\napp.use(rateLimiter);\n\n// ============================================================================\n// Health Check Endpoint\n// ============================================================================\n\napp.get('/health', (req, res) => {\n  res.status(200).json({\n    success: true,\n    message: 'AgroKart API is running',\n    timestamp: new Date().toISOString(),\n    environment: NODE_ENV,\n    version: process.env.npm_package_version || '1.0.0',\n  });\n});\n\n// ============================================================================\n// API Routes\n// ============================================================================\n\nconst API_PREFIX = '/api';\n\napp.use(`${API_PREFIX}/auth`, authRoutes);\napp.use(`${API_PREFIX}/users`, userRoutes);\napp.use(`${API_PREFIX}/products`, productRoutes);\napp.use(`${API_PREFIX}/categories`, categoryRoutes);\napp.use(`${API_PREFIX}/orders`, orderRoutes);\n\n// API documentation endpoint\napp.get(`${API_PREFIX}`, (req, res) => {\n  res.json({\n    success: true,\n    message: 'AgroKart API v1.0.0',\n    documentation: 'https://github.com/agrokart/api-docs',\n    endpoints: {\n      auth: `${API_PREFIX}/auth`,\n      users: `${API_PREFIX}/users`,\n      products: `${API_PREFIX}/products`,\n      categories: `${API_PREFIX}/categories`,\n      orders: `${API_PREFIX}/orders`,\n    },\n  });\n});\n\n// ============================================================================\n// 404 Handler\n// ============================================================================\n\napp.use('*', (req, res) => {\n  res.status(404).json({\n    success: false,\n    message: 'Endpoint not found',\n    path: req.originalUrl,\n  });\n});\n\n// ============================================================================\n// Error Handling Middleware (must be last)\n// ============================================================================\n\napp.use(errorHandler);\n\n// ============================================================================\n// Server Startup\n// ============================================================================\n\nconst startServer = async (): Promise<void> => {\n  try {\n    // Initialize database connection\n    await initializeDatabase();\n    console.log('✅ Database connected successfully');\n\n    // Start the server\n    app.listen(PORT, () => {\n      console.log(`🚀 AgroKart API Server running on port ${PORT}`);\n      console.log(`📝 Environment: ${NODE_ENV}`);\n      console.log(`🌐 API Base URL: http://localhost:${PORT}${API_PREFIX}`);\n      console.log(`❤️  Health Check: http://localhost:${PORT}/health`);\n      \n      if (NODE_ENV === 'development') {\n        console.log('\\n📚 Available Endpoints:');\n        console.log(`   • Auth: http://localhost:${PORT}${API_PREFIX}/auth`);\n        console.log(`   • Users: http://localhost:${PORT}${API_PREFIX}/users`);\n        console.log(`   • Products: http://localhost:${PORT}${API_PREFIX}/products`);\n        console.log(`   • Categories: http://localhost:${PORT}${API_PREFIX}/categories`);\n        console.log(`   • Orders: http://localhost:${PORT}${API_PREFIX}/orders`);\n      }\n    });\n  } catch (error) {\n    console.error('❌ Failed to start server:', error);\n    process.exit(1);\n  }\n};\n\n// Handle unhandled promise rejections\nprocess.on('unhandledRejection', (reason: Error | any, promise: Promise<any>) => {\n  console.error('❌ Unhandled Promise Rejection:', reason);\n  console.error('Promise:', promise);\n  // Close server & exit process\n  process.exit(1);\n});\n\n// Handle uncaught exceptions\nprocess.on('uncaughtException', (error: Error) => {\n  console.error('❌ Uncaught Exception:', error);\n  process.exit(1);\n});\n\n// Graceful shutdown\nprocess.on('SIGTERM', () => {\n  console.log('📴 Received SIGTERM, shutting down gracefully');\n  process.exit(0);\n});\n\nprocess.on('SIGINT', () => {\n  console.log('📴 Received SIGINT, shutting down gracefully');\n  process.exit(0);\n});\n\n// Start the server\nstartServer();\n\n// Export app for testing\nexport default app;
+if (NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+} else {
+  app.use(morgan('combined'));
+}
+app.use(requestLogger);
+
+// Rate limiting
+app.use(rateLimiter);
+
+// ============================================================================
+// Health Check Endpoint
+// ============================================================================
+
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'AgroKart API is running',
+    timestamp: new Date().toISOString(),
+    environment: NODE_ENV,
+    version: process.env.npm_package_version || '1.0.0',
+  });
+});
+
+// ============================================================================
+// API Routes
+// ============================================================================
+
+const API_PREFIX = '/api';
+
+app.use(`${API_PREFIX}/auth`, authRoutes);
+app.use(`${API_PREFIX}/users`, userRoutes);
+app.use(`${API_PREFIX}/products`, productRoutes);
+app.use(`${API_PREFIX}/categories`, categoryRoutes);
+app.use(`${API_PREFIX}/orders`, orderRoutes);
+
+// API documentation endpoint
+app.get(`${API_PREFIX}`, (req, res) => {
+  res.json({
+    success: true,
+    message: 'AgroKart API v1.0.0',
+    documentation: 'https://github.com/agrokart/api-docs',
+    endpoints: {
+      auth: `${API_PREFIX}/auth`,
+      users: `${API_PREFIX}/users`,
+      products: `${API_PREFIX}/products`,
+      categories: `${API_PREFIX}/categories`,
+      orders: `${API_PREFIX}/orders`,
+    },
+  });
+});
+
+// ============================================================================
+// 404 Handler
+// ============================================================================
+
+app.use('*', (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'Endpoint not found',
+    path: req.originalUrl,
+  });
+});
+
+// ============================================================================
+// Error Handling Middleware (must be last)
+// ============================================================================
+
+app.use(errorHandler);
+
+// ============================================================================
+// Server Startup
+// ============================================================================
+
+const startServer = async (): Promise<void> => {
+  try {
+    // Initialize database connection
+    await initializeDatabase();
+    console.log('✅ Database connected successfully');
+
+    // Start the server
+    app.listen(PORT, () => {
+      console.log(`🚀 AgroKart API Server running on port ${PORT}`);
+      console.log(`📝 Environment: ${NODE_ENV}`);
+      console.log(`🌐 API Base URL: http://localhost:${PORT}${API_PREFIX}`);
+      console.log(`❤️  Health Check: http://localhost:${PORT}/health`);
+      
+      if (NODE_ENV === 'development') {
+        console.log('\n📚 Available Endpoints:');
+        console.log(`   • Auth: http://localhost:${PORT}${API_PREFIX}/auth`);
+        console.log(`   • Users: http://localhost:${PORT}${API_PREFIX}/users`);
+        console.log(`   • Products: http://localhost:${PORT}${API_PREFIX}/products`);
+        console.log(`   • Categories: http://localhost:${PORT}${API_PREFIX}/categories`);
+        console.log(`   • Orders: http://localhost:${PORT}${API_PREFIX}/orders`);
+      }
+    });
+  } catch (error) {
+    console.error('❌ Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason: Error | any, promise: Promise<any>) => {
+  console.error('❌ Unhandled Promise Rejection:', reason);
+  console.error('Promise:', promise);
+  // Close server & exit process
+  process.exit(1);
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (error: Error) => {
+  console.error('❌ Uncaught Exception:', error);
+  process.exit(1);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('📴 Received SIGTERM, shutting down gracefully');
+  process.exit(0);
+});
+
+process.on('SIGINT', () => {
+  console.log('📴 Received SIGINT, shutting down gracefully');
+  process.exit(0);
+});
+
+// Start the server
+startServer();
+
+// Export app for testing
+export default app;
